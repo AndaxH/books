@@ -1,12 +1,30 @@
 import contentful, { type EntryFieldTypes } from "contentful";
 
+type Image = {
+  fields: {
+    title: EntryFieldTypes.Text;
+    description: EntryFieldTypes.Text;
+    file: {
+      url: EntryFieldTypes.Text;
+      details: {
+        size: EntryFieldTypes.Number;
+        image: {
+          width: EntryFieldTypes.Number;
+          height: EntryFieldTypes.Number;
+        };
+      };
+      fileName: EntryFieldTypes.Text;
+      contentType: EntryFieldTypes.Text;
+    };
+  };
+};
+
 type Author = {
-  contentTypeId: "author";
   fields: {
     firstName: EntryFieldTypes.Text;
     lastName: EntryFieldTypes.Text;
     shortBio: EntryFieldTypes.Text;
-    photo: EntryFieldTypes.AssetLink;
+    photo: Image;
   };
 };
 
@@ -15,10 +33,10 @@ export interface BookReview {
   fields: {
     title: EntryFieldTypes.Text;
     body: EntryFieldTypes.RichText;
-    publishDate: EntryFieldTypes.Date;
-    bookImage: EntryFieldTypes.AssetLink;
     slug: EntryFieldTypes.Text;
-    author: EntryFieldTypes.EntryLink<Author>;
+    author: EntryFieldTypes.Object<Author>;
+    publishDate?: EntryFieldTypes.Date;
+    bookImage?: EntryFieldTypes.Object<Image>;
   };
 }
 
