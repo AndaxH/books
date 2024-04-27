@@ -9,7 +9,8 @@ const entries = await contentfulClient.getEntries<BookReview>({
   content_type: "bookReview",
 });
 
-console.log(JSON.stringify(entries.items[0], null, 2));
+// Debug response
+// console.log(JSON.stringify(entries.items[0], null, 2));
 
 const reviews = entries.items.map((item) => {
   const { title, publishDate, slug, author, bookImage } = item.fields;
