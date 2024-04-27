@@ -1,4 +1,5 @@
 ---
+import Layout from "../../layouts/Layout.astro";
 import { contentfulClient } from "../../lib/contentful";
 import { documentToHtmlString } from "@contentful/rich-text-html-renderer";
 import type { BookReview } from "../../lib/contentful";
@@ -8,29 +9,55 @@ export async function getStaticPaths() {
     content_type: "bookReview",
   });
 
-  const pages = entries.items.map((item) => ({
-    params: { slug: item.fields.slug },
-    props: {
-      title: item.fields.title,
-      content: documentToHtmlString(item.fields.body),
-      date: item.fields.publishDate
-        ? new Date(item.fields.publishDate).toLocaleDateString("en-AU")
-        : undefined,
-    },
-  }));
+  const pages = entries.items.map((item) => {
+    const { title, body, publishDate, slug, author, bookImage } = item.fields;
+    return {
+      params: { slug: item.fields.slug },
+      props: {
+        title,
+        body: documentToHtmlString(body),
+        date: publishDate
+          ? new Date(publishDate).toLocaleDateString("en-AU")
+          : undefined,
+        slug,
+        author: {
+          name: `${author.fields.firstName} ${author.fields.lastName}`,
+          image: author.fields.photo.fields.file.url as unknown as string,
+        },
+        bookImage,
+      },
+    };
+  });
   return pages;
 }
 
-const { content, title, date } = Astro.props;
+const { body, title, date, author } = Astro.props;
 ---
 
-<html lang="en">
-  <head>
-    <title>{title}</title>
-  </head>
-  <body>
+<Layout title={title}>
+  <main>
     <h1>{title}</h1>
-    <time>{date}</time>
-    <article set:html={content} />
-  </body>
-</html>
+    <span><h2>{author.name}</h2><small><time>{date}</time></small></span>
+    <img src={author.image} />
+    <article set:html={body} />
+  </main>
+</Layout>
+
+<style>
+  main {
+    margin: auto;
+    padding: 1rem;
+    width: 800px;
+    max-width: calc(100% - 2rem);
+    font-size: 20px;
+    line-height: 1.6;
+  }
+  span {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  img {
+    width: 20rem;
+  }
+</style>
