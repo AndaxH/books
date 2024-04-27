@@ -22,23 +22,35 @@ export async function getStaticPaths() {
         slug,
         author: {
           name: `${author.fields.firstName} ${author.fields.lastName}`,
-          image: author.fields.photo.fields.file.url as unknown as string,
+          image: author.fields.photo.fields.file.url,
         },
-        bookImage,
+        bookImage: {
+          url: bookImage?.fields.file.url,
+          title: bookImage?.fields.title,
+        },
       },
     };
   });
   return pages;
 }
 
-const { body, title, date, author } = Astro.props;
+const { body, title, date, author, bookImage } = Astro.props;
 ---
 
 <Layout title={title}>
   <main>
     <h1>{title}</h1>
-    <span><h2>{author.name}</h2><small><time>{date}</time></small></span>
-    <img src={author.image} />
+    <div>
+      <figure class="authorInfo">
+        <img class="authorImg" src={author.image} /><figcaption>
+          {author.name}
+        </figcaption>
+      </figure><small><time>{date}</time></small>
+    </div>
+    <figure class="bookInfo">
+      <img class="bookImg" src={bookImage.url} alt={bookImage.title} />
+      <figcaption>{bookImage.title}</figcaption>
+    </figure>
     <article set:html={body} />
   </main>
 </Layout>
@@ -52,12 +64,23 @@ const { body, title, date, author } = Astro.props;
     font-size: 20px;
     line-height: 1.6;
   }
-  span {
+  div {
     display: flex;
     justify-content: space-between;
-    align-items: center;
   }
-  img {
-    width: 20rem;
+  .authorInfo {
+    margin: 0;
+    font-size: medium;
+  }
+  .authorImg {
+    width: 15rem;
+    border-radius: 64px;
+  }
+  .bookImg {
+    width: 100%;
+    border-radius: 32px;
+  }
+  .bookInfo {
+    text-align: center;
   }
 </style>

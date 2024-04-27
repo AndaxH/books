@@ -2,10 +2,10 @@ import contentful, { type EntryFieldTypes } from "contentful";
 
 type Image = {
   fields: {
-    title: EntryFieldTypes.Text;
-    description: EntryFieldTypes.Text;
+    title: string;
+    description: string;
     file: {
-      url: EntryFieldTypes.Text;
+      url: string;
       details: {
         size: EntryFieldTypes.Number;
         image: {
